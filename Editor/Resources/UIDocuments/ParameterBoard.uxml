@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:Label text="Parameter" display-tooltip-when-elided="true" style="flex-grow: 1; height: 20px; justify-content: flex-start; flex-shrink: 0; max-height: 20px; min-height: 20px; -unity-font-style: bold; font-size: 20px; color: rgb(106, 106, 106); -unity-text-align: middle-left; margin-left: 4px; margin-top: 4px; margin-bottom: 4px;" />
+        <ui:VisualElement name="ToolBarArea" style="flex-grow: 1; height: 20px; min-height: 20px; min-width: 100%; max-height: 20px; max-width: 100%; align-items: stretch;" />
+        <ui:VisualElement name="ParameterArea" style="flex-direction: column; flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>

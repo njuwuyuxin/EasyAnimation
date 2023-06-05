@@ -1,0 +1,23 @@
+#ParameterCard {
+    width: 95%;
+    border-width: 1px;
+    border-color: aliceblue;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 4px 4px;
+}
+
+#ParameterName{
+    font-size: 12px;
+    -unity-font-style: bold;
+    border-width: 1px;
+    border-radius: 15px;
+    border-color: bisque;
+    padding: 2px 10px;
+}
+
+#ParameterType{
+    font-size: 10px;
+    color: #6A6A6A;
+    margin-top: 4px;
+}

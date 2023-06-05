@@ -1,0 +1,18 @@
+{
+    "name": "AnimationGraph.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e4df0371575202547befce6619432ac7"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

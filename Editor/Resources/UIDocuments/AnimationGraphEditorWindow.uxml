@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-direction: column; height: auto; align-items: stretch; border-top-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); flex-grow: 1;">
+        <ui:VisualElement name="MainArea" style="display: flex; align-items: stretch; flex-basis: auto; flex-direction: row; height: auto; flex-grow: 9; justify-content: flex-start;">
+            <ui:VisualElement name="ParameterArea" style="flex-grow: 2; flex-direction: column;" />
+            <ui:VisualElement name="GraphArea" style="flex-basis: auto; border-left-width: 1px; border-right-width: 1px; border-top-width: 0; border-bottom-width: 0; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); align-items: stretch; height: auto; min-height: auto; flex-grow: 7;" />
+            <ui:VisualElement name="InspectorArea" style="flex-grow: 2.5; height: 100%;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Docker" style="flex-grow: 2; border-top-width: 1px; border-top-color: rgb(0, 0, 0);" />
+    </ui:VisualElement>
+</ui:UXML>

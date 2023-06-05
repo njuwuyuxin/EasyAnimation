@@ -1,0 +1,18 @@
+{
+  "name": "com.zijin.easyanimtion",
+  "version": "1.0.0",
+  "displayName": "Easy Animation",
+  "description": "An Easy, data-flow animation framework",
+  "unity": "2021.3",
+  "dependencies": {
+  },
+ "keywords": [
+    "Animation",
+    "Framework",
+    "data flow"
+  ],
+  "author": {
+    "name": "Zijin",
+    "email": "876465382@qq.com"
+  }
+}
