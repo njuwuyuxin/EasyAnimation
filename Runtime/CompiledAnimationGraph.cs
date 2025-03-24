@@ -18,6 +18,16 @@ namespace AnimationGraph
 
         [SerializeReference]
         public List<GraphParameter> parameters;
+
+        public void UpdateGraph()
+        {
+            
+        }
+
+        public void EvaluateGraph(ref PoseContext poseContext)
+        {
+            
+        }
     }
 
     [Serializable]

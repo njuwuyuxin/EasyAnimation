@@ -18,6 +18,7 @@ namespace AnimationGraph
         private Dictionary<int, GraphParameter> m_Id2ParameterMap;
         private Dictionary<string, GraphParameter> m_String2ParameterMap;
         
+        //Deprecated
         public AnimationGraphRuntime(AnimationActor actor, CompiledAnimationGraph compiledAnimationGraph)
         {
             m_Actor = actor;
@@ -33,6 +34,11 @@ namespace AnimationGraph
             m_PostProcessPlayable.ConnectInput(0, m_FinalPosePlayable, 0, 1f);
             
             m_Output.SetSourcePlayable(m_PostProcessPlayable);
+        }
+
+        public AnimationGraphRuntime(CompiledAnimationGraph compiledAnimationGraph)
+        {
+            
         }
 
         public void Run()
