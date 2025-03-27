@@ -184,16 +184,18 @@ namespace AnimationGraph
 
         private void CalculateRootMotion(ref CompactPose compactPose, in BoneTransformCurve RootMotionCurve)
         {
-            float animationTimeLastFrame = (m_LastFrameTime - m_StartTime);
             float animationTimeThisFrame = (Time.time - m_StartTime);
             if (m_AnimationClip.isLooping)
             {
-                animationTimeLastFrame %= m_AnimationClip.length;
                 animationTimeThisFrame %= m_AnimationClip.length;
             }
-            BoneTransform RootBoneTransformLastFrame = RootMotionCurve.Evaluate(animationTimeLastFrame);
-            BoneTransform RootBoneTransformThisFrame = RootMotionCurve.Evaluate(animationTimeThisFrame);
-            Vector3 deltaPosition = RootBoneTransformThisFrame.position - RootBoneTransformLastFrame.position;
+            
+            float animationTimeLastFrame = animationTimeThisFrame - Time.deltaTime;
+            animationTimeLastFrame = Mathf.Clamp(animationTimeLastFrame, 0, animationTimeLastFrame);
+
+            BoneTransform rootBoneTransformLastFrame = RootMotionCurve.Evaluate(animationTimeLastFrame);
+            BoneTransform rootBoneTransformThisFrame = RootMotionCurve.Evaluate(animationTimeThisFrame);
+            Vector3 deltaPosition = rootBoneTransformThisFrame.position - rootBoneTransformLastFrame.position;
             Vector3 deltaPositionWorldSpace = m_BoneContainer.rootBone.parent.localToWorldMatrix * deltaPosition;
             m_RootMotionData.deltaPosition = deltaPositionWorldSpace;
         }
