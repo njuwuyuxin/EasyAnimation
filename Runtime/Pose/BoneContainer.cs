@@ -15,7 +15,7 @@ namespace AnimationGraph
         public Transform rootBone => m_RootBone;
         public int boneCount => m_RawBones.Length;
         
-        private Dictionary<string, int> bonePathToBoneIndex = new Dictionary<string, int>();
+        private Dictionary<string, int> m_BonePathToBoneIndex = new Dictionary<string, int>();
 
         public void InitializeBoneContainer(SkinnedMeshRenderer skinnedMeshRenderer)
         {
@@ -29,11 +29,11 @@ namespace AnimationGraph
         
         private void BuildBoneMap()
         {
-            bonePathToBoneIndex.Clear();
+            m_BonePathToBoneIndex.Clear();
             for (int boneIndex = 0; boneIndex < m_RawBones.Length; boneIndex++)
             {
                 string path = GetBonePath(m_RawBones[boneIndex]);
-                bonePathToBoneIndex.Add(path, boneIndex);
+                m_BonePathToBoneIndex.Add(path, boneIndex);
             }
         }
         
@@ -70,9 +70,9 @@ namespace AnimationGraph
 
         public int GetBoneIndexFromBonePath(string bonePath)
         {
-            if (bonePathToBoneIndex.ContainsKey(bonePath))
+            if (m_BonePathToBoneIndex.ContainsKey(bonePath))
             {
-                return bonePathToBoneIndex[bonePath];
+                return m_BonePathToBoneIndex[bonePath];
             }
             else
             {

@@ -1,6 +1,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+
 namespace AnimationGraph
 {
     public enum EAnimationMode
@@ -11,17 +12,22 @@ namespace AnimationGraph
     public class AnimationCore
     {
         public EAnimationMode animationMode { get; set; }
+        public bool enableRootMotion { get; set; }
         public CompiledAnimationGraph animationGraph;
         
         private SkinnedMeshRenderer m_SkinnedMeshRenderer;
 
         private AnimationGraphRuntime m_AnimationGraphRuntime;
 
-        private AnimationClip m_TestAnimationClip;
-        private float StartTime;
+        private AnimationClip m_AnimationClip;
+        private float m_StartTime;
+        private float m_LastFrameTime;
         
 
         private BoneContainer m_BoneContainer;
+
+        public RootMotionData rootMotionData => m_RootMotionData;
+        private RootMotionData m_RootMotionData = new RootMotionData();
 
         public void Initialize(SkinnedMeshRenderer skinnedMeshRenderer)
         {
@@ -30,13 +36,14 @@ namespace AnimationGraph
             m_BoneContainer = new BoneContainer();
             m_BoneContainer.InitializeBoneContainer(m_SkinnedMeshRenderer);
             
-            StartTime = Time.time;
+            m_StartTime = Time.time;
+            m_LastFrameTime = m_StartTime;
         }
         
 
         public void SetTestAnimationClip(AnimationClip animationClip)
         {
-            m_TestAnimationClip = animationClip;
+            m_AnimationClip = animationClip;
         }
         // Update is called once per frame
         public void Update(float deltaTime)
@@ -77,15 +84,57 @@ namespace AnimationGraph
             Span<BoneTransform> boneTransformBuffer = stackalloc BoneTransform[m_BoneContainer.boneCount];
             CompactPose compactPose = new CompactPose(boneTransformBuffer,m_BoneContainer);
             compactPose.ResetToRefPose();
+
+            BoneTransformCurve rootBoneTransformCurve = new BoneTransformCurve();
             
-            EditorCurveBinding[] curveBindings = AnimationUtility.GetCurveBindings(m_TestAnimationClip);
+            
+            EditorCurveBinding[] curveBindings = AnimationUtility.GetCurveBindings(m_AnimationClip);
             foreach (EditorCurveBinding curveBinding in curveBindings)
             {
-                AnimationCurve animationCurve = AnimationUtility.GetEditorCurve(m_TestAnimationClip, curveBinding);
-                float AnimationTime = (Time.time - StartTime) % m_TestAnimationClip.length;
+                AnimationCurve animationCurve = AnimationUtility.GetEditorCurve(m_AnimationClip, curveBinding);
+                float AnimationTime = (Time.time - m_StartTime) % m_AnimationClip.length;
                 float curveValue = animationCurve.Evaluate(AnimationTime);
                 int boneIndex = m_BoneContainer.GetBoneIndexFromBonePath(curveBinding.path);
+
+                //Extract RootMotion Curve
+                if (m_BoneContainer.GetBoneByBonePath(curveBinding.path) == m_BoneContainer.rootBone)
+                {
+                    switch (curveBinding.propertyName)
+                    {
+                        case "m_LocalPosition.x":
+                            rootBoneTransformCurve.positionX = animationCurve;
+                            break;
+                        case "m_LocalPosition.y":
+                            rootBoneTransformCurve.positionY = animationCurve;
+                            break;
+                        case "m_LocalPosition.z":
+                            rootBoneTransformCurve.positionZ = animationCurve;
+                            break;
+                        case "m_LocalRotation.x":
+                            rootBoneTransformCurve.rotationX = animationCurve;
+                            break;
+                        case "m_LocalRotation.y":
+                            rootBoneTransformCurve.rotationY = animationCurve;
+                            break;
+                        case "m_LocalRotation.z":
+                            rootBoneTransformCurve.rotationZ = animationCurve;
+                            break;
+                        case "m_LocalRotation.w":
+                            rootBoneTransformCurve.rotationW = animationCurve;
+                            break;
+                        case "m_LocalScale.x":
+                            rootBoneTransformCurve.scaleX = animationCurve;
+                            break;
+                        case "m_LocalScale.y":
+                            rootBoneTransformCurve.scaleY = animationCurve;
+                            break;
+                        case "m_LocalScale.z":
+                            rootBoneTransformCurve.scaleZ = animationCurve;
+                            break;
+                    }
+                }
                 
+                //Sample Pose, inluding root bone
                 switch (curveBinding.propertyName)
                 {
                     case "m_LocalPosition.x":
@@ -113,15 +162,40 @@ namespace AnimationGraph
                         compactPose[boneIndex].scale.x = curveValue;
                         break;
                     case "m_LocalScale.y":
-                        compactPose[boneIndex].scale.x = curveValue;
+                        compactPose[boneIndex].scale.y = curveValue;
                         break;
                     case "m_LocalScale.z":
-                        compactPose[boneIndex].scale.x = curveValue;
+                        compactPose[boneIndex].scale.z = curveValue;
                         break;
                 }
             }
+
+            if (enableRootMotion)
+            {
+                compactPose[0].position.x = 0;
+                compactPose[0].position.z = 0;
+                CalculateRootMotion(ref compactPose, in rootBoneTransformCurve);
+            }
             
-            RefreshBoneTransforms(compactPose);
+            RefreshBoneTransforms(in compactPose);
+
+            m_LastFrameTime = Time.time;
+        }
+
+        private void CalculateRootMotion(ref CompactPose compactPose, in BoneTransformCurve RootMotionCurve)
+        {
+            float animationTimeLastFrame = (m_LastFrameTime - m_StartTime);
+            float animationTimeThisFrame = (Time.time - m_StartTime);
+            if (m_AnimationClip.isLooping)
+            {
+                animationTimeLastFrame %= m_AnimationClip.length;
+                animationTimeThisFrame %= m_AnimationClip.length;
+            }
+            BoneTransform RootBoneTransformLastFrame = RootMotionCurve.Evaluate(animationTimeLastFrame);
+            BoneTransform RootBoneTransformThisFrame = RootMotionCurve.Evaluate(animationTimeThisFrame);
+            Vector3 deltaPosition = RootBoneTransformThisFrame.position - RootBoneTransformLastFrame.position;
+            Vector3 deltaPositionWorldSpace = m_BoneContainer.rootBone.parent.localToWorldMatrix * deltaPosition;
+            m_RootMotionData.deltaPosition = deltaPositionWorldSpace;
         }
 
         private void RefreshBoneTransforms(in CompactPose compactPose)
