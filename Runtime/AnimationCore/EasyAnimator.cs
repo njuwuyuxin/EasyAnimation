@@ -17,10 +17,10 @@ namespace AnimationGraph
         void Start()
         {
             m_AnimationCore = new AnimationCore();
+            m_AnimationCore.SetTestAnimationClip(animationClip);
             m_AnimationCore.Initialize(skinnedMeshRenderer);
             m_AnimationCore.animationMode = animationMode;
             m_AnimationCore.enableRootMotion = enableRootMotion;
-            m_AnimationCore.SetTestAnimationClip(animationClip);
         }
 
         // Update is called once per frame
